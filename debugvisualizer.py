@@ -11,9 +11,6 @@ class Plotter:
     def __init__(self, *geometries) -> None:
         self.__gen_geometries_dict(geometries)
 
-    def visualize(self):
-        return self.__viz_dict
-
     def __gen_geometries_dict(self, geometries) -> None:
         """main func"""
 
@@ -41,6 +38,14 @@ class Plotter:
             data["x"].extend(x)
             data["y"].extend(y)
             
+            if isinstance(geometry, Polygon) and len(geometry.interiors) > 0:
+                for interior in geometry.interiors:
+                    data["x"].append(None)  # Separator for holes
+                    data["y"].append(None)
+                    x, y = self.__get_x_y(interior)
+                    data["x"].extend(x)
+                    data["y"].extend(y)
+            
             # separator
             data["x"].append(None)
             data["y"].append(None)
@@ -64,10 +69,13 @@ class Plotter:
         if geometry.is_empty:
             return [], []
 
-        coords = geometry.boundary.coords if isinstance(geometry, Polygon) else geometry.coords
+        coords = geometry.exterior.coords if isinstance(geometry, Polygon) else geometry.coords
         x = list(np.array(coords)[:, 0])
         y = list(np.array(coords)[:, 1])
         return x, y
+
+    def visualize(self):
+        return self.__viz_dict
 
 
 
