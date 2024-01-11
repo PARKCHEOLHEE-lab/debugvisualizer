@@ -76,6 +76,8 @@ class Plotter:
         return x, y
 
     def visualize(self, to_json: bool = True):
+        """get data for visualization. if to_json switch is true, convert it to JSON string."""
+
         if to_json:
             return json.dumps(self.__viz_dict)
         
