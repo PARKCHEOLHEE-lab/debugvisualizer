@@ -1,5 +1,5 @@
 from typing import List, Tuple, Union, Iterable
-from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point, MultiPoint
+from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point
 
 import json
 import trimesh
@@ -45,7 +45,7 @@ class Plotter:
         }
 
         if isinstance(geometry, trimesh.Trimesh):
-            data["opacity"] = 0.8
+            data["opacity"] = 0.7
             data["x"] = geometry.vertices[:, 0].tolist()
             data["y"] = geometry.vertices[:, 1].tolist()
             data["z"] = geometry.vertices[:, 2].tolist()
