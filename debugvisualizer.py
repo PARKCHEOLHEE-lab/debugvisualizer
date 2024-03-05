@@ -1,10 +1,12 @@
-from typing import List, Tuple, Union, Iterable
-from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point
 
 import json
 import trimesh
 import numpy as np
+import plotly.graph_objects as go
 
+from plotly.offline import plot
+from typing import List, Tuple, Union, Iterable
+from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point
 
 
 class Plotter:
@@ -34,7 +36,7 @@ class Plotter:
             "data": self.__geometries_data,
         }
 
-    def __get_geometry_data(self, geometry: Union[Polygon, LineString, MultiPolygon, MultiLineString, trimesh.Trimesh, Point]) -> dict:
+    def __get_geometry_data(self, geometry: Union[trimesh.Trimesh, Polygon, LineString, MultiPolygon, MultiLineString, Point]) -> dict:
         """get plotly format data"""
 
         data = {
@@ -100,13 +102,27 @@ class Plotter:
         
         return x, y, z
 
-    def visualize(self, to_json: bool = True):
+    def visualize(self, to_json: bool = True) -> dict:
         """get data for visualization. if to_json switch is true, convert it to JSON string."""
 
         if to_json:
             return json.dumps(self.viz_dict)
         
         return self.viz_dict
+    
+    def save(self, filename: str = "visualization.html") -> None:
+        """save the visualized result to an HTML file."""
+
+        fig = go.Figure(data=[go.Mesh3d(**geom) if geom["type"] == "mesh3d" else go.Scatter3d(**geom) for geom in self.geometries_data])
+        
+        fig.update_layout(scene=dict(
+            xaxis_title='X Axis',
+            yaxis_title='Y Axis',
+            zaxis_title='Z Axis'
+        ))
+        
+        plot(fig, filename=filename, auto_open=False)
+        
 
 
 
