@@ -1,5 +1,5 @@
 from typing import List, Tuple, Union, Iterable
-from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point
+from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point, MultiPoint
 
 import json
 import trimesh
@@ -45,6 +45,7 @@ class Plotter:
         }
 
         if isinstance(geometry, trimesh.Trimesh):
+            data["opacity"] = 0.8
             data["x"] = geometry.vertices[:, 0].tolist()
             data["y"] = geometry.vertices[:, 1].tolist()
             data["z"] = geometry.vertices[:, 2].tolist()
@@ -54,20 +55,20 @@ class Plotter:
                 data["y"], data["z"] = data["z"], data["y"]
 
         elif isinstance(geometry, (Point, LineString, Polygon)):
-            x, y = self.__get_x_y(geometry)
+            x, y, z = self.__get_x_y_z(geometry)
             data["x"].extend(x)
             data["y"].extend(y)
-            data["z"].extend([0] * len(x))
+            data["z"].extend(z)
 
             if isinstance(geometry, Polygon) and len(geometry.interiors) > 0:
                 for interior in geometry.interiors:
                     data["x"].append(None)
                     data["y"].append(None)
                     data["z"].append(None)
-                    x, y = self.__get_x_y(interior)
+                    x, y, z = self.__get_x_y_z(interior)
                     data["x"].extend(x)
                     data["y"].extend(y)
-                    data["z"].extend([0] * len(x))
+                    data["z"].extend(z)
 
             data["x"].append(None)
             data["y"].append(None)
@@ -79,14 +80,11 @@ class Plotter:
                 d = self.__get_geometry_data(geom)
                 data["x"].extend(d["x"])
                 data["y"].extend(d["y"])
-                data["z"].extend(d.get("z", [0] * len(d["x"])))
-
-                if isinstance(geom, (Polygon, MultiPolygon)) and data["fill"] is None:
-                    data["fill"] = "toself"
+                data["z"].extend(d["z"])
 
         return data
 
-    def __get_x_y(self, geometry: Union[Point, Polygon, LineString]) -> Tuple[List[float]]:
+    def __get_x_y_z(self, geometry: Union[Point, Polygon, LineString]) -> Tuple[List[float]]:
         """get single geometry's x,y coordinates"""
 
         if geometry.is_empty:
@@ -95,7 +93,12 @@ class Plotter:
         coords = geometry.exterior.coords if isinstance(geometry, Polygon) else geometry.coords
         x = list(np.array(coords)[:, 0])
         y = list(np.array(coords)[:, 1])
-        return x, y
+        z = list(np.zeros_like(y))
+
+        if geometry.has_z:
+            z = list(np.array(coords)[:, 2])
+        
+        return x, y, z
 
     def visualize(self, to_json: bool = True):
         """get data for visualization. if to_json switch is true, convert it to JSON string."""
