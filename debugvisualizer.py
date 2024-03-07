@@ -116,9 +116,10 @@ class Plotter:
         fig = go.Figure(data=[go.Mesh3d(**geom) if geom["type"] == "mesh3d" else go.Scatter3d(**geom) for geom in self.geometries_data])
         
         fig.update_layout(scene=dict(
-            xaxis_title='X Axis',
-            yaxis_title='Y Axis',
-            zaxis_title='Z Axis'
+            xaxis_title="X Axis",
+            yaxis_title="Y Axis",
+            zaxis_title="Z Axis"
+            aspectmode="data",
         ))
         
         plot(fig, filename=filename, auto_open=False)
