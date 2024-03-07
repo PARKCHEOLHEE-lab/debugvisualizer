@@ -118,7 +118,7 @@ class Plotter:
         fig.update_layout(scene=dict(
             xaxis_title="X Axis",
             yaxis_title="Y Axis",
-            zaxis_title="Z Axis"
+            zaxis_title="Z Axis",
             aspectmode="data",
         ))
         
