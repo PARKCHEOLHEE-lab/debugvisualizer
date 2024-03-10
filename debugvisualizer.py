@@ -34,6 +34,9 @@ class Plotter:
         self.__viz_dict = {
             "kind": {"plotly": True},
             "data": self.__geometries_data,
+            "layout": {
+                "aspectmode": "data",
+            }
         }
 
     def __get_geometry_data(self, geometry: Union[trimesh.Trimesh, Polygon, LineString, MultiPolygon, MultiLineString, Point]) -> dict:
