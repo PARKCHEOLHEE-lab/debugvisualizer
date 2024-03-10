@@ -12,8 +12,9 @@ from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString,
 class Plotter:
     """shapely geometries plotter for vscode debugvisualizer extension"""
 
-    def __init__(self, *geometries, map_z_to_y: bool = True) -> None:
+    def __init__(self, *geometries, map_z_to_y: bool = True, orthographic: bool = False) -> None:
         self.map_z_to_y = map_z_to_y
+        self.orthographic = orthographic
         self.__gen_geometries_dict(geometries)
     
     @property
@@ -35,9 +36,17 @@ class Plotter:
             "kind": {"plotly": True},
             "data": self.__geometries_data,
             "layout": {
-                "aspectmode": "data",
-            }
+                "scene": {
+                    "xaxis_title": "X Axis",
+                    "yaxis_title": "Y Axis",
+                    "zaxis_title": "Z Axis",
+                    "aspectmode": "data",
+                }
+            },
         }
+        
+        if self.orthographic:
+            self.__viz_dict["layout"]["scene"]["camera"] = dict(projection=dict(type="orthographic"))
 
     def __get_geometry_data(self, geometry: Union[trimesh.Trimesh, Polygon, LineString, MultiPolygon, MultiLineString, Point]) -> dict:
         """get plotly format data"""
@@ -47,6 +56,8 @@ class Plotter:
             "y": [],
             "z": [],
             "type": "mesh3d" if isinstance(geometry, trimesh.Trimesh) else "scatter3d",
+            "name": "mesh" if isinstance(geometry, trimesh.Trimesh) else "geometry",
+            "showlegend": True
         }
 
         if isinstance(geometry, trimesh.Trimesh):
@@ -117,13 +128,7 @@ class Plotter:
         """save the visualized result to an HTML file."""
 
         fig = go.Figure(data=[go.Mesh3d(**geom) if geom["type"] == "mesh3d" else go.Scatter3d(**geom) for geom in self.geometries_data])
-        
-        fig.update_layout(scene=dict(
-            xaxis_title="X Axis",
-            yaxis_title="Y Axis",
-            zaxis_title="Z Axis",
-            aspectmode="data",
-        ))
+        fig.update_layout(**self.viz_dict["layout"])
         
         plot(fig, filename=filename, auto_open=False)
         
@@ -164,3 +169,5 @@ if __name__ == "__main__":
     ])
 
     mesh = trimesh.Trimesh(vertices=mesh_vertices, faces=mesh_faces)
+    
+    a=1
