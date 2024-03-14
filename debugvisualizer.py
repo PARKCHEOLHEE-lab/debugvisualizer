@@ -172,4 +172,4 @@ if __name__ == "__main__":
 
     mesh = trimesh.Trimesh(vertices=mesh_vertices, faces=mesh_faces)
 
-    a = 1
+    print("break point")
