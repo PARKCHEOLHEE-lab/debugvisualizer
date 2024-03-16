@@ -59,10 +59,10 @@ class Plotter:
             "type": "mesh3d" if isinstance(geometry, trimesh.Trimesh) else "scatter3d",
             "name": "mesh" if isinstance(geometry, trimesh.Trimesh) else "geometry",
             "showlegend": True,
+            "opacity": 0.6,
         }
 
         if isinstance(geometry, trimesh.Trimesh):
-            data["opacity"] = 0.7
             data["x"] = geometry.vertices[:, 0].tolist()
             data["y"] = geometry.vertices[:, 1].tolist()
             data["z"] = geometry.vertices[:, 2].tolist()
