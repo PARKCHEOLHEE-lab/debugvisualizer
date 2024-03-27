@@ -11,7 +11,7 @@ from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString,
 class Plotter:
     """shapely geometries plotter for vscode debugvisualizer extension"""
 
-    def __init__(self, *geometries, map_z_to_y: bool = True, orthographic: bool = True) -> None:
+    def __init__(self, *geometries, map_z_to_y: bool = False, orthographic: bool = True) -> None:
         self.map_z_to_y = map_z_to_y
         self.orthographic = orthographic
         self.__gen_geometries_dict(geometries)
