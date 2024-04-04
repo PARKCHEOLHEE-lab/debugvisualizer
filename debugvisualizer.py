@@ -67,6 +67,9 @@ class Plotter:
         }
 
         if isinstance(geometry, trimesh.Trimesh):
+            del data["mode"]
+
+        if isinstance(geometry, trimesh.Trimesh):
             if geometry.vertices.shape[0] > 0:
                 data["x"] = geometry.vertices[:, 0].tolist()
                 data["y"] = geometry.vertices[:, 1].tolist()
