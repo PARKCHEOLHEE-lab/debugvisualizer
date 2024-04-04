@@ -113,7 +113,7 @@ class Plotter:
         """get single geometry's x,y coordinates"""
 
         if geometry.is_empty:
-            return [], []
+            return [], [], []
 
         coords = geometry.exterior.coords if isinstance(geometry, Polygon) else geometry.coords
         x = list(np.array(coords)[:, 0])
