@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from ..debugvisualizer import Plotter
+from debugvisualizer import Plotter
 
 
 @pytest.fixture
