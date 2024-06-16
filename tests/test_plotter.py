@@ -1,12 +1,7 @@
-import sys
-import os
-
-sys.path.append(os.path.abspath("../"))
-
 import json
 import pytest
 
-from debugvisualizer import Plotter
+from ..debugvisualizer import Plotter
 
 
 @pytest.fixture
