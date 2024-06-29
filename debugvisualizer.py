@@ -4,7 +4,7 @@ import numpy as np
 import plotly.graph_objects as go
 
 from plotly.offline import plot
-from typing import List, Tuple, Union, Iterable
+from typing import List, Tuple, Union
 from shapely.geometry import Polygon, MultiPolygon, LineString, MultiLineString, Point
 
 
@@ -15,6 +15,7 @@ class Plotter:
         self, *geometries, map_z_to_y: bool = False, orthographic: bool = True, show_vertices: bool = True
     ) -> None:
         self.__gen_geometries_dict(geometries, map_z_to_y, orthographic, show_vertices)
+        self.__iterables = (list, tuple)
 
     @property
     def geometries_data(self):
@@ -68,8 +69,6 @@ class Plotter:
 
         if isinstance(geometry, trimesh.Trimesh):
             del data["mode"]
-
-        if isinstance(geometry, trimesh.Trimesh):
             if geometry.vertices.shape[0] > 0:
                 data["x"] = geometry.vertices[:, 0].tolist()
                 data["y"] = geometry.vertices[:, 1].tolist()
@@ -100,7 +99,7 @@ class Plotter:
             data["z"].append(None)
 
         else:
-            geometry = np.array(geometry).flatten() if isinstance(geometry, Iterable) else geometry.geoms
+            geometry = self.__flatten(geometry) if isinstance(geometry, self.__iterables) else geometry.geoms
             for geom in geometry:
                 d = self.__get_geometry_data(geom, map_z_to_y, show_vertices)
                 data["x"].extend(d["x"])
@@ -124,6 +123,18 @@ class Plotter:
             z = list(np.array(coords)[:, 2])
 
         return x, y, z
+
+    def __flatten(self, geometry):
+        """flatten a list of geometries"""
+
+        flattened = []
+        for geom in geometry:
+            if isinstance(geom, self.__iterables):
+                flattened.extend(self.__flatten(geom))
+            else:
+                flattened.append(geom)
+
+        return flattened
 
     def visualize(self, to_json: bool = True) -> dict:
         """get data for visualization. if to_json switch is true, convert it to JSON string."""
