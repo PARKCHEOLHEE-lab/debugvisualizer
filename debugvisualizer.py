@@ -14,8 +14,8 @@ class Plotter:
     def __init__(
         self, *geometries, map_z_to_y: bool = False, orthographic: bool = True, show_vertices: bool = True
     ) -> None:
-        self.__gen_geometries_dict(geometries, map_z_to_y, orthographic, show_vertices)
         self.__iterables = (list, tuple)
+        self.__gen_geometries_dict(geometries, map_z_to_y, orthographic, show_vertices)
 
     @property
     def geometries_data(self):
