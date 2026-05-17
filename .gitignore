@@ -1,3 +1,7 @@
 *.pyc
 *.html
+.venv/
 __pycache__/
+typescript/coverage/
+typescript/dist/
+typescript/node_modules/
