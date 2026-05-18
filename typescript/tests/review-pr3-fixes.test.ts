@@ -116,6 +116,21 @@ describe("review PR #3 fixes", () => {
     60_000
   );
 
+  it("KR11: Plotter constructor and adapters option accept readonly arrays (as const)", () => {
+    const passthroughAdapter: GeometryAdapter = (value) =>
+      value instanceof Object && "kind" in (value as object) && (value as { kind: unknown }).kind === "Tag"
+        ? lineString([[0, 0, 0], [1, 0, 0]], (value as { name: string }).name)
+        : undefined;
+
+    const geometries = [{ kind: "Tag", name: "ro" }] as const;
+    const adapters = [passthroughAdapter] as const;
+
+    const visualization = new Plotter(geometries, { adapters }).getVisualizationData();
+
+    expect(visualization.data).toHaveLength(1);
+    expect(visualization.data[0]!.type).toBe("scatter3d");
+  });
+
   it("KR10: exported geometry interfaces accept readonly outer arrays (as const) via direct annotation", () => {
     // Realistic pattern: lift the `as const` literal into a separate binding,
     // then drop it into a value annotated with the exported interface.

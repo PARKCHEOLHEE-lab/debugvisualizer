@@ -135,7 +135,7 @@ export interface PlotterOptions {
   mapZToY?: boolean;
   orthographic?: boolean;
   showVertices?: boolean;
-  adapters?: GeometryAdapter[];
+  adapters?: readonly GeometryAdapter[];
 }
 
 export type GeometryAdapter = (
@@ -179,7 +179,7 @@ export const mesh = (
 
 export class Plotter {
   constructor(
-    private readonly geometries: unknown[] = [],
+    private readonly geometries: readonly unknown[] = [],
     private readonly options: PlotterOptions = {}
   ) {}
 
