@@ -581,11 +581,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isArrayLikeNumber(value: unknown): value is ArrayLike<number> {
-  if (!isRecord(value) || typeof value.length !== "number" || value.length === 0) {
+  if (!isRecord(value) || typeof value.length !== "number") {
     return false;
   }
 
-  return typeof value[0] === "number";
+  return value.length === 0 || typeof value[0] === "number";
 }
 
 function isCoordinate(value: unknown): value is Coordinate {

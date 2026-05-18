@@ -144,6 +144,26 @@ describe("review PR #3 fixes", () => {
     ]);
   });
 
+  it("KR8: empty TypedArray mesh-like { positions, indices } produces a mesh3d trace at runtime", () => {
+    const visualization = new Plotter([
+      {
+        positions: new Float32Array(),
+        indices: new Uint16Array(),
+        name: "empty-typed-array-mesh"
+      }
+    ]).getVisualizationData();
+
+    expect(visualization.data).toHaveLength(1);
+    const trace = visualization.data[0]!;
+    expect(trace.type).toBe("mesh3d");
+    expect(trace.x).toEqual([]);
+    expect(trace.y).toEqual([]);
+    expect(trace.z).toEqual([]);
+    expect(trace.i).toEqual([]);
+    expect(trace.j).toEqual([]);
+    expect(trace.k).toEqual([]);
+  });
+
   it(
     "KR7: npm run typecheck fails when a tests/*.ts file has a deliberate type error",
     () => {
