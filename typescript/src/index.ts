@@ -47,38 +47,40 @@ export interface PointGeometry {
 
 export interface MultiPointGeometry {
   type: "MultiPoint";
-  coordinates: Coordinate[];
+  coordinates: readonly Coordinate[];
   name?: string;
 }
 
 export interface LineStringGeometry {
   type: "LineString";
-  coordinates: Coordinate[];
+  coordinates: readonly Coordinate[];
   name?: string;
 }
 
 export interface PolygonGeometry {
   type: "Polygon";
-  coordinates: Coordinate[] | Coordinate[][];
+  coordinates: readonly Coordinate[] | readonly (readonly Coordinate[])[];
   name?: string;
 }
 
 export interface MultiLineStringGeometry {
   type: "MultiLineString";
-  coordinates: Coordinate[][];
+  coordinates: readonly (readonly Coordinate[])[];
   name?: string;
 }
 
 export interface MultiPolygonGeometry {
   type: "MultiPolygon";
-  coordinates: Array<Coordinate[] | Coordinate[][]>;
+  coordinates: ReadonlyArray<
+    readonly Coordinate[] | readonly (readonly Coordinate[])[]
+  >;
   name?: string;
 }
 
 export interface MeshGeometry {
   type: "Mesh";
-  vertices: Coordinate[];
-  faces: MeshFace[];
+  vertices: readonly Coordinate[];
+  faces: readonly MeshFace[];
   name?: string;
 }
 
@@ -151,7 +153,7 @@ export const lineString = (
   name?: string
 ): LineStringGeometry => ({
   type: "LineString",
-  coordinates: coordinates as Coordinate[],
+  coordinates,
   ...(name === undefined ? {} : { name })
 });
 
@@ -160,7 +162,7 @@ export const polygon = (
   name?: string
 ): PolygonGeometry => ({
   type: "Polygon",
-  coordinates: coordinates as Coordinate[] | Coordinate[][],
+  coordinates,
   ...(name === undefined ? {} : { name })
 });
 
@@ -170,8 +172,8 @@ export const mesh = (
   name?: string
 ): MeshGeometry => ({
   type: "Mesh",
-  vertices: vertices as Coordinate[],
-  faces: faces as MeshFace[],
+  vertices,
+  faces,
   ...(name === undefined ? {} : { name })
 });
 
@@ -306,7 +308,7 @@ export class Plotter {
       | PolygonGeometry
       | MultiLineStringGeometry
       | MultiPolygonGeometry
-  ): Coordinate[][] {
+  ): ReadonlyArray<readonly Coordinate[]> {
     if (geometry.type === "LineString") {
       return [geometry.coordinates];
     }
@@ -334,7 +336,7 @@ export class Plotter {
       y: Array<number | null>;
       z: Array<number | null>;
     },
-    ring: Coordinate[]
+    ring: readonly Coordinate[]
   ): void {
     for (const coordinate of ring) {
       this.pushCoordinate(values, coordinate);
@@ -572,16 +574,16 @@ function withFeatureName(
 }
 
 function normalizePolygonCoordinates(
-  coordinates: Coordinate[] | Coordinate[][]
-): Coordinate[][] {
+  coordinates: readonly Coordinate[] | readonly (readonly Coordinate[])[]
+): ReadonlyArray<readonly Coordinate[]> {
   if (coordinates.length === 0) {
     return [];
   }
 
   const first = coordinates[0];
   return first !== undefined && isCoordinate(first)
-    ? [coordinates as Coordinate[]]
-    : coordinates as Coordinate[][];
+    ? [coordinates as readonly Coordinate[]]
+    : (coordinates as ReadonlyArray<readonly Coordinate[]>);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

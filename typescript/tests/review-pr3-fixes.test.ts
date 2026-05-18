@@ -9,7 +9,10 @@ import {
   polygon,
   Plotter,
   type GeometryAdapter,
-  type MeshLikeGeometry
+  type LineStringGeometry,
+  type MeshGeometry,
+  type MeshLikeGeometry,
+  type PolygonGeometry
 } from "../src/index";
 
 describe("review PR #3 fixes", () => {
@@ -112,6 +115,48 @@ describe("review PR #3 fixes", () => {
     },
     60_000
   );
+
+  it("KR10: exported geometry interfaces accept readonly outer arrays (as const) via direct annotation", () => {
+    // Realistic pattern: lift the `as const` literal into a separate binding,
+    // then drop it into a value annotated with the exported interface.
+    const lineCoords = [[0, 0, 0], [1, 0, 0]] as const;
+    const polyCoords = [
+      [
+        [0, 0, 0],
+        [2, 0, 0],
+        [2, 2, 0],
+        [0, 0, 0]
+      ]
+    ] as const;
+    const meshVertices = [[0, 0, 0], [1, 0, 0], [1, 1, 0]] as const;
+    const meshFaces = [[0, 1, 2]] as const;
+
+    const line: LineStringGeometry = {
+      type: "LineString",
+      coordinates: lineCoords,
+      name: "ro-line"
+    };
+    const poly: PolygonGeometry = {
+      type: "Polygon",
+      coordinates: polyCoords,
+      name: "ro-poly"
+    };
+    const m: MeshGeometry = {
+      type: "Mesh",
+      vertices: meshVertices,
+      faces: meshFaces,
+      name: "ro-mesh"
+    };
+
+    const visualization = new Plotter([line, poly, m]).getVisualizationData();
+
+    expect(visualization.data).toHaveLength(3);
+    expect(visualization.data.map((trace) => trace.type)).toEqual([
+      "scatter3d",
+      "scatter3d",
+      "mesh3d"
+    ]);
+  });
 
   it("KR6: lineString/polygon/mesh accept readonly tuple literals (as const)", () => {
     const lineCoords = [[0, 0, 0], [1, 0, 0]] as const;
