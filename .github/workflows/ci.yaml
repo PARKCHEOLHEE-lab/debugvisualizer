@@ -1,4 +1,4 @@
-name: Python CI
+name: CI
 
 on: [push]
 
@@ -21,3 +21,18 @@ jobs:
         PYTHONPATH: ${{ github.workspace }}
       run: |
         pytest tests/
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+        cache: npm
+        cache-dependency-path: typescript/package-lock.json
+    - name: Install TypeScript dependencies
+      working-directory: typescript
+      run: npm ci
+    - name: Run TypeScript tests
+      working-directory: typescript
+      run: npm test
+    - name: Build TypeScript package
+      working-directory: typescript
+      run: npm run build

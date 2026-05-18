@@ -1,0 +1,36 @@
+{
+  "name": "debugvisualizer",
+  "version": "0.1.0",
+  "description": "TypeScript helpers for visualizing geometry with VS Code Debug Visualizer.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json"
+  },
+  "keywords": [
+    "debug",
+    "debug-visualizer",
+    "geometry",
+    "plotly",
+    "typescript"
+  ],
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/node": "^24.12.4",
+    "typescript": "^5.6.3",
+    "vitest": "^4.1.6"
+  }
+}
