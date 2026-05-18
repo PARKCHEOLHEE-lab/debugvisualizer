@@ -82,14 +82,22 @@ export interface MeshGeometry {
   name?: string;
 }
 
-export interface MeshLikeGeometry {
+type MeshCoordinateInput = Coordinate[] | ArrayLike<number>;
+type MeshFaceInput = MeshFace[] | ArrayLike<number>;
+
+type MeshLikeVertices =
+  | { vertices: MeshCoordinateInput; positions?: MeshCoordinateInput }
+  | { vertices?: MeshCoordinateInput; positions: MeshCoordinateInput };
+
+type MeshLikeFaces =
+  | { faces: MeshFaceInput; indices?: MeshFaceInput }
+  | { faces?: MeshFaceInput; indices: MeshFaceInput };
+
+export type MeshLikeGeometry = {
   type?: string;
-  vertices?: Coordinate[] | ArrayLike<number>;
-  positions?: Coordinate[] | ArrayLike<number>;
-  faces?: MeshFace[] | ArrayLike<number>;
-  indices?: MeshFace[] | ArrayLike<number>;
   name?: string;
-}
+} & MeshLikeVertices &
+  MeshLikeFaces;
 
 export interface FeatureGeometry {
   type: "Feature";

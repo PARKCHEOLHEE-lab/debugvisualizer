@@ -144,6 +144,41 @@ describe("review PR #3 fixes", () => {
     ]);
   });
 
+  it(
+    "KR9: MeshLikeGeometry rejects adapter returns lacking (vertices|positions) and (faces|indices)",
+    () => {
+      const pkgDir = process.cwd();
+      const fixturePath = join(pkgDir, "tests", "__kr9-regression.ts");
+      writeFileSync(
+        fixturePath,
+        [
+          'import type { MeshLikeGeometry } from "../src/index";',
+          "// @ts-expect-error: bare { type, name } lacks a (vertices|positions) and (faces|indices) pair",
+          'const overbroad: MeshLikeGeometry = { type: "DomainThing", name: "not-a-generic-geometry" };',
+          "void overbroad;",
+          ""
+        ].join("\n"),
+        "utf8"
+      );
+
+      let typecheckPassed = false;
+      try {
+        execSync("npm run typecheck --silent", {
+          cwd: pkgDir,
+          stdio: ["ignore", "ignore", "ignore"]
+        });
+        typecheckPassed = true;
+      } catch {
+        typecheckPassed = false;
+      } finally {
+        rmSync(fixturePath, { force: true });
+      }
+
+      expect(typecheckPassed).toBe(true);
+    },
+    60_000
+  );
+
   it("KR8: empty TypedArray mesh-like { positions, indices } produces a mesh3d trace at runtime", () => {
     const visualization = new Plotter([
       {
