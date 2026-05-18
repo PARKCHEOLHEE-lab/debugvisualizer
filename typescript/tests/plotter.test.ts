@@ -187,10 +187,12 @@ describe("Plotter", () => {
               "kind" in value &&
               value.kind === "Segment"
             ) {
-              return lineString([
-                value.start as { x: number; y: number; z: number },
-                value.end as { x: number; y: number; z: number }
-              ], value.label as string);
+              const seg = value as unknown as {
+                start: { x: number; y: number; z: number };
+                end: { x: number; y: number; z: number };
+                label: string;
+              };
+              return lineString([seg.start, seg.end], seg.label);
             }
 
             return undefined;

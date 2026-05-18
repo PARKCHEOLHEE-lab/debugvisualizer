@@ -17,7 +17,7 @@ describe("TypeScript package metadata", () => {
     expect(packageJson.scripts).toMatchObject({
       build: "tsc -p tsconfig.json",
       test: "vitest run",
-      typecheck: "tsc -p tsconfig.json --noEmit"
+      typecheck: "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json"
     });
   });
 });

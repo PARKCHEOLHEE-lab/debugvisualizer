@@ -116,6 +116,7 @@ export type GeometryInput =
   | MultiLineStringGeometry
   | MultiPolygonGeometry
   | MeshGeometry
+  | MeshLikeGeometry
   | FeatureGeometry
   | FeatureCollectionGeometry
   | GeometryInput[];
@@ -138,31 +139,31 @@ export const point = (coordinates: Coordinate, name?: string): PointGeometry => 
 });
 
 export const lineString = (
-  coordinates: Coordinate[],
+  coordinates: readonly Coordinate[],
   name?: string
 ): LineStringGeometry => ({
   type: "LineString",
-  coordinates,
+  coordinates: coordinates as Coordinate[],
   ...(name === undefined ? {} : { name })
 });
 
 export const polygon = (
-  coordinates: Coordinate[] | Coordinate[][],
+  coordinates: readonly Coordinate[] | readonly (readonly Coordinate[])[],
   name?: string
 ): PolygonGeometry => ({
   type: "Polygon",
-  coordinates,
+  coordinates: coordinates as Coordinate[] | Coordinate[][],
   ...(name === undefined ? {} : { name })
 });
 
 export const mesh = (
-  vertices: Coordinate[],
-  faces: MeshFace[],
+  vertices: readonly Coordinate[],
+  faces: readonly MeshFace[],
   name?: string
 ): MeshGeometry => ({
   type: "Mesh",
-  vertices,
-  faces,
+  vertices: vertices as Coordinate[],
+  faces: faces as MeshFace[],
   ...(name === undefined ? {} : { name })
 });
 
@@ -445,16 +446,22 @@ function normalizeMeshLikeGeometry(value: MeshLikeGeometry): MeshGeometry {
 function hasCoordinateInput(
   value: unknown
 ): value is Coordinate[] | ArrayLike<number> {
-  if (Array.isArray(value) && value.length > 0) {
-    return isCoordinate(value[0]) || typeof value[0] === "number";
+  if (Array.isArray(value)) {
+    return (
+      value.length === 0 ||
+      isCoordinate(value[0]) ||
+      typeof value[0] === "number"
+    );
   }
 
   return isArrayLikeNumber(value);
 }
 
 function hasFaceInput(value: unknown): value is MeshFace[] | ArrayLike<number> {
-  if (Array.isArray(value) && value.length > 0) {
-    return isFace(value[0]) || typeof value[0] === "number";
+  if (Array.isArray(value)) {
+    return (
+      value.length === 0 || isFace(value[0]) || typeof value[0] === "number"
+    );
   }
 
   return isArrayLikeNumber(value);
@@ -519,19 +526,23 @@ function isFace(value: unknown): value is MeshFace {
 }
 
 function isScatterGeometry(value: unknown): value is ScatterGeometry {
+  if (!isRecord(value) || typeof value.type !== "string") {
+    return false;
+  }
+  if (!("coordinates" in value)) {
+    return false;
+  }
+  if (value.type === "Point") {
+    return isCoordinate(value.coordinates);
+  }
   return (
-    isRecord(value) &&
-    typeof value.type === "string" &&
     [
-      "Point",
       "MultiPoint",
       "LineString",
       "Polygon",
       "MultiLineString",
       "MultiPolygon"
-    ].includes(value.type) &&
-    "coordinates" in value &&
-    Array.isArray(value.coordinates)
+    ].includes(value.type) && Array.isArray(value.coordinates)
   );
 }
 

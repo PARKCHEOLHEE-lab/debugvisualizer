@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "declarationMap": true,
     "exactOptionalPropertyTypes": true,
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
